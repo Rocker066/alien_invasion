@@ -2,6 +2,7 @@ import sys
 import pygame
 from settings import Settings
 from ship import Ship
+from bullet import Bullet
 
 
 class AlienInvasion:
@@ -25,6 +26,10 @@ class AlienInvasion:
 
         # Make an instance of Ship
         self.ship = Ship(self)
+
+        # create the group that holds the bullets
+        self.bullets = pygame.sprite.Group()
+
         # Set the framerate
         self.clock = pygame.time.Clock()
 
@@ -35,9 +40,18 @@ class AlienInvasion:
     def run_game(self):
         """Start the main loop for the game."""
         while True:
+            # Check for user inputs
             self._check_events()
+
+            # Show the ship
             self.ship.update()
+
+            # Show the bullets
+            self._update_bullets()
+
+            # Use the updated positions to draw a new screen
             self._update_screen()
+
             # Limit the framerate to 60
             self.clock.tick(60)
 
@@ -64,6 +78,8 @@ class AlienInvasion:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
 
 
     def _check_keyup_events(self, event):
@@ -74,9 +90,32 @@ class AlienInvasion:
             self.ship.moving_left = False
 
 
+    def _fire_bullet(self):
+        """Create a new bullet and add it to the bullets group."""
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
+
+    def _update_bullets(self):
+        """Update position of bullets and get rid of old bullets."""
+        self.bullets.update()
+
+        # Get rid of bullets that have disappeared out of the screen.
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+            # print(len(self.bullets))
+
+
     def _update_screen(self):
         """Update images on the screen, and flip to the new screen."""
         self.screen.fill(self.settings.bg_color)
+
+        # Draw the bullets
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+
         self.ship.blitme()
 
         pygame.display.flip()

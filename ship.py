@@ -29,12 +29,12 @@ class Ship:
         if self.moving_right and self.rect.right < self.screen_rect.right:
             # self.rect.x += 1
             self.x += self.settings.ship_speed
-            print(self.rect.right, self.screen_rect.right)
+            # print(self.rect.right, self.screen_rect.right)
 
         if self.moving_left and self.rect.left > 0:
             # self.rect.x -= 1
             self.x -= self.settings.ship_speed
-            print(self.rect.left, self.screen_rect.left)
+            # print(self.rect.left, self.screen_rect.left)
 
         # update rect object from self.x
         self.rect.x = self.x

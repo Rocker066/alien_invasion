@@ -34,5 +34,6 @@ class Rocket:
             self.rect.y += 1
             print(self.rect.y, self.screen_rect.bottom)
 
+
     def blitme(self):
         self.screen.blit(self.image, self.rect)

@@ -1,5 +1,6 @@
 import sys
 import pygame
+from bullet import Bullet
 from settings import Settings
 from rocket import Rocket
 
@@ -18,7 +19,13 @@ class BlueSky:
         #      self.settings.screen_height)
         # )
 
+        pygame.display.set_caption('Blue Sky')
+
         self.rocket = Rocket(self)
+
+        # create the group that holds the bullets
+        self.bullets = pygame.sprite.Group()
+
         self.clock = pygame.time.Clock()
 
 
@@ -26,6 +33,7 @@ class BlueSky:
         while True:
             self._check_events()
             self.rocket.update()
+            self._update_bullets()
             self._update_screen()
             self.clock.tick(120)
 
@@ -55,8 +63,12 @@ class BlueSky:
         if event.key == pygame.K_DOWN:
             self.rocket.moving_down = True
 
+        if event.key == pygame.K_SPACE:
+            self._fire_bullet()
+
         if event.key == pygame.K_q:
             sys.exit()
+
 
     def _check_keyup_events(self, event):
         if event.key == pygame.K_RIGHT:
@@ -72,8 +84,29 @@ class BlueSky:
             self.rocket.moving_down = False
 
 
+    def _fire_bullet(self):
+        """Create a new bullet and add it to the bullets group."""
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
+
+    def _update_bullets(self):
+        self.bullets.update()
+
+        # Get rid of the fired bullets.
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+
+
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
+
+        # Draw the bullets
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+
         self.rocket.blitme()
 
         pygame.display.flip()
