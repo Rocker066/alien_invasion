@@ -132,6 +132,3 @@ class DragonCoin:
 if __name__ == '__main__':
     dc = DragonCoin()
     dc.run_game()
-
-
-
